@@ -1,0 +1,133 @@
+<!-- This is a Django template for a sports registration page. It includes Bootstrap for styling and Font Awesome for icons. -->
+<!-- The page allows users to register participants for a sports event, with dynamic form handling for multiple participants. -->
+<!-- The formset is used to manage multiple participant forms, and JavaScript is included to add or remove participant forms dynamically. -->
+<!-- The page also includes a header with a title and a brief description, and it displays success messages upon successful registration. -->
+<!-- The static files are loaded using Django's static file handling system. -->
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}Sports Registration - LUQMAN SPORT & FAMILY DAY{% endblock %}
+
+{% block header_subtitle %}Let's team up, gear up, and play! Register yourself and your family.{% endblock %}
+
+{% block content %}
+<form method="post" class="card p-4 shadow">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <div id="formset-container">
+        {% for form in formset %}
+            <div class="participant-form mb-4 border-bottom pb-3">
+                <h5>Participant {{ forloop.counter }}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.first_name.label_tag }} {{ form.first_name }}
+                        {{ form.first_name.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.last_name.label_tag }} {{ form.last_name }}
+                        {{ form.last_name.errors }}
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        {{ form.age_group.label_tag }} {{ form.age_group }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.gender.label_tag }} {{ form.gender }}
+                    </div>
+                </div>
+                <div class="mt-3">
+                    {{ form.activities.label_tag }}
+                    <div class="d-flex flex-wrap">
+                        {% for checkbox in form.activities %}
+                            <div class="form-check me-3">{{ checkbox }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if forloop.counter > 1 %}
+                    <button type="button" class="btn btn-danger btn-sm mt-2 remove-form">Remove</button>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <button type="button" id="add-form" class="btn btn-secondary mb-3">+ Add Another Participant</button>
+    <button type="submit" class="btn btn-primary btn-lg w-100">Register Now!</button>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let formCount = parseInt("{{ formset.total_form_count }}");
+    const totalForms = document.querySelector('#id_form-TOTAL_FORMS');
+    const formContainer = document.querySelector('#formset-container');
+
+    document.querySelector('#add-form').addEventListener('click', () => {
+        const newForm = formContainer.children[0].cloneNode(true);
+        
+        // Update form index
+        newForm.innerHTML = newForm.innerHTML.replace(/form-0/g, `form-${formCount}`);
+        newForm.querySelector('h5').textContent = `Participant ${formCount + 1}`;
+        
+        // Update all input names and IDs
+        newForm.querySelectorAll('input, select').forEach(input => {
+            const oldName = input.name;
+            const oldId = input.id;
+            
+            if (oldName) {
+                input.name = oldName.replace(/form-\d+/, `form-${formCount}`);
+            }
+            if (oldId) {
+                input.id = oldId.replace(/form-\d+/, `form-${formCount}`);
+            }
+            
+            // Clear values
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                input.checked = false;
+            } else {
+                input.value = '';
+            }
+        });
+        
+        // Update labels
+        newForm.querySelectorAll('label').forEach(label => {
+            if (label.getAttribute('for')) {
+                label.setAttribute('for', label.getAttribute('for').replace(/form-\d+/, `form-${formCount}`));
+            }
+        });
+        
+        // Add remove button
+        if (!newForm.querySelector('.remove-form')) {
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-danger btn-sm mt-2 remove-form';
+            removeBtn.textContent = 'Remove';
+            newForm.appendChild(removeBtn);
+        }
+        
+        formContainer.appendChild(newForm);
+        formCount++;
+        totalForms.value = formCount;
+    });
+
+    // Handle form removal
+    formContainer.addEventListener('click', e => {
+        if (e.target.classList.contains('remove-form')) {
+            e.target.closest('.participant-form').remove();
+            formCount--;
+            totalForms.value = formCount;
+            
+            // Re-index all forms
+            Array.from(formContainer.children).forEach((form, index) => {
+                form.querySelector('h5').textContent = `Participant ${index + 1}`;
+                form.querySelectorAll('input, select, label').forEach(element => {
+                    ['name', 'id', 'for'].forEach(attr => {
+                        if (element.getAttribute(attr)) {
+                            element.setAttribute(attr, element.getAttribute(attr).replace(/form-\d+/, `form-${index}`));
+                        }
+                    });
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'registry/base.html' %}
+
+{% block title %}Registration Successful - LUQMAN SPORT & FAMILY DAY{% endblock %}
+
+{% block header_subtitle %}Registration completed successfully!{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <div class="card p-5 shadow">
+        <h1 class="text-success mb-4">
+            <i class="fas fa-check-circle"></i> Registration Successful!
+        </h1>
+        <p class="lead mb-4">Thank you for registering for LUQMAN SPORT & FAMILY DAY!</p>
+        <p class="text-muted mb-4">We're excited to have you join us for this amazing event!</p>
+        <div class="d-grid gap-2 d-md-block">
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Register Another Participant
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

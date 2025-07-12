@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LUQMAN SPORT & FAMILY DAY{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'registry/styles.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="lebma-background">
+    <header class="text-white text-center py-4">
+        <div class="container">
+            <div class="header-content">
+                <img src="{% static 'registry/images/lebma-logo.jpeg' %}" alt="LEBMA Logo" class="header-logo">
+                <div class="header-text">
+                    <h1><i class="fas fa-trophy"></i> LUQMAN SPORT & FAMILY DAY</h1>
+                    <p class="lead">{% block header_subtitle %}Let's team up, gear up, and play!{% endblock %}</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container my-5">
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
